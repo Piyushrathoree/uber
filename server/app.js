@@ -1,11 +1,15 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+
+import userRouter from "./Routes/user.route.js"
+
+
 const app = express();
 
 app.use(cors());
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+app.use(express.json())
+
+app.use("/api/v1/users", userRouter);
 
 export default app;

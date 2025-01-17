@@ -1,4 +1,0 @@
-PORT = 5500 
-MONGODB_URI= mongodb+srv://Piyush:aFHVrMfzGwPnWYKC@piyush.xcukb.mongodb.net/
-JWT_SECRET = 1234
-DB_NAME = UberDB

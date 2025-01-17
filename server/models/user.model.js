@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const userSchema = new Schema({
     firstName: {
@@ -19,7 +19,9 @@ const userSchema = new Schema({
 });
 
 userSchema.method.generateToken = () => {
-    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+        expiresIn: "24h",
+    });
     return token;
 };
 
@@ -31,8 +33,7 @@ userSchema.statics.hashPass = async (password) => {
     return await bcrypt.hash(password, 10);
 };
 
-const User = mongoose.model("User", userSchema);
 
-export {
-    User
-}
+const User = mongoose.model("user", userSchema);
+
+export { User };

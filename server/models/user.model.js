@@ -18,14 +18,14 @@ const userSchema = new Schema({
     socketID: { type: String },
 });
 
-userSchema.method.generateToken = () => {
+userSchema.methods.generateToken = () => {
     const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
         expiresIn: "24h",
     });
     return token;
 };
 
-userSchema.method.comparePass = async function (password) {
+userSchema.methods.comparePass = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 

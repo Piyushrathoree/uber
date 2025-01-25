@@ -1,5 +1,5 @@
+import { blackListUser } from "../models/blackList.model.js";
 import { User } from "../models/user.model.js";
-
 
 const registerUser = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
@@ -45,17 +45,30 @@ const loginUser = async (req, res) => {
         return res.status(400).json({ msg: "invalid username or password" });
     }
 
-   const correctPass = await user.isPasswordCorrect(password)
-    
+    const correctPass = await user.isPasswordCorrect(password);
 
     if (!correctPass) {
         return res.status(400).json({ msg: "invalid username or password" });
     }
 
     const token = await user.generateToken();
-    console.log(token);
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
 
-    res.status(200).json({ token, user });
+    res.status(200).cookie("token", token, options).json({ token, user });
 };
 
-export { registerUser, loginUser };
+const logoutUser = async (req, res) => {
+    const token = req.cookie.token || req.authorization?.split(" ")[1];
+    await blackListUser.create({ token });
+
+    res.clearCookie("token")
+        .status(200)
+        .json({ msg: "user log out successfully" });
+};
+
+
+
+export { registerUser, loginUser, logoutUser };

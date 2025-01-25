@@ -36,39 +36,42 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    if (!(email || password)) {
-        return res.status(400).json({ msg: "Please fill all fields" });
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ msg: "Please fill all fields" });
+        }
+
+        const user = await User.findOne({ email }).select("+password");
+        if (!user) {
+            return res.status(400).json({ msg: "Invalid username or password" });
+        }
+
+        const correctPass = await user.isPasswordCorrect(password);
+        if (!correctPass) {
+            return res.status(400).json({ msg: "Invalid username or password" });
+        }
+
+        const token = await user.generateToken();
+        const options = {
+            httpOnly: true,
+        };
+
+        res.status(200).cookie("token", token, options).json({ token, user });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ msg: "Server Error" });
     }
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-        return res.status(400).json({ msg: "invalid username or password" });
-    }
-
-    const correctPass = await user.isPasswordCorrect(password);
-
-    if (!correctPass) {
-        return res.status(400).json({ msg: "invalid username or password" });
-    }
-
-    const token = await user.generateToken();
-    const options = {
-        httpOnly: true,
-        secure: true,
-    };
-
-    res.status(200).cookie("token", token, options).json({ token, user });
 };
 
+
 const logoutUser = async (req, res) => {
-    const token = req.cookie.token || req.authorization?.split(" ")[1];
+    const token = req.cookies.token || req.header.authorization?.split(" ")[1];
     await blackListUser.create({ token });
 
     res.clearCookie("token")
         .status(200)
         .json({ msg: "user log out successfully" });
 };
-
-
 
 export { registerUser, loginUser, logoutUser };

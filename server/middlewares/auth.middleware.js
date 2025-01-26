@@ -8,6 +8,11 @@ export default authUser = async (req, res, next) => {
         if (!token) {
            return res.send({ msg: "unauthorized" });
         }
+
+        const isBlacklisted = await blackListUser.findOne({ token });
+        if(isBlacklisted) {
+            return res.status(401).json({ msg: "unauthorized" });
+        }
     
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     

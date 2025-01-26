@@ -55,6 +55,9 @@ const loginUser = async (req, res) => {
                 .status(400)
                 .json({ msg: "Invalid username or password" });
         }
+        if (req.cookies.token) {
+            return res.json({ msg: "you are already logged in " });
+        }
 
         const token = await user.generateToken();
         const options = {
@@ -80,8 +83,8 @@ const logoutUser = async (req, res) => {
 
 const getUserProfile = async (_, res) => {
     res.status(200).json({
-        msg:"user profile fetched"
-    })
-}
+        msg: "user profile fetched",
+    });
+};
 
-export { registerUser, loginUser, logoutUser , getUserProfile};
+export { registerUser, loginUser, logoutUser, getUserProfile };

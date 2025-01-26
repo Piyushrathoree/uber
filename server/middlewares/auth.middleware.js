@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
+import { blackListUser } from "../models/blackList.model.js";
 
-export default authUser = async (req, res, next) => {
+export const authUser = async (req, res, next) => {
     try {
         const token = req.cookies.token || req.header.authorization?.split(" ")[1];
     

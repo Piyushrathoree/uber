@@ -1,4 +1,4 @@
-import { registerUser, loginUser } from "../controllers/user.controller.js";
+import { registerUser, loginUser, logoutUser } from "../controllers/user.controller.js";
 import express from "express";
 import cors from "cors";
 import { body } from "express-validator";
@@ -25,4 +25,5 @@ router.post(
     [body("email").isEmail().withMessage("invalid email")],
     loginUser
 );
+router.post('/logout' , logoutUser)
 export default router;

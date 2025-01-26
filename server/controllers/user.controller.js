@@ -67,8 +67,11 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
     const token = req.cookies.token || req.header.authorization?.split(" ")[1];
+    console.log("Received token: " + token);
+    
     await blackListUser.create({ token });
-
+    console.log("Blacklisted token: " + token);
+    
     res.clearCookie("token")
         .status(200)
         .json({ msg: "user log out successfully" });
